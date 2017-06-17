@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ddcompany.fm.fxml.Controller">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Файл">
+            <items>
+                  <Menu mnemonicParsing="false" text="Создать">
+                    <items>
+                      <MenuItem fx:id="menuItemCreateFile" mnemonicParsing="false" text="Файл" />
+                        <MenuItem fx:id="menuItemCreateDir" mnemonicParsing="false" text="Папку" />
+                    </items>
+                  </Menu>
+                  <MenuItem fx:id="menuItemQuit" mnemonicParsing="false" text="Выйти" />
+            </items>
+          </Menu>
+            <Menu fx:id="menuFavorites" mnemonicParsing="false" onShowing="#onMenuFavoritesClick" text="Закладки и диски">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Test" />
+               </items></Menu>
+          <Menu mnemonicParsing="false" text="Помощь">
+            <items>
+              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="О программе" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <left>
+      <BorderPane fx:id="borderPaneLeft" prefHeight="375.0" prefWidth="294.0" BorderPane.alignment="CENTER">
+          <center>
+              <TableView fx:id="tableViewLeft" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <columns>
+                      <TableColumn fx:id="columnNameLeft" prefWidth="181.0" text="Имя" />
+                      <TableColumn fx:id="columnTypeLeft" prefWidth="43.0" text="Тип" />
+                  <TableColumn fx:id="columnSizeLeft" prefWidth="69.0" text="Размер" />
+                  </columns>
+              </TableView>
+          </center>
+         <top>
+            <TextField fx:id="fieldPathLeft" onAction="#onTextFieldLeftEnter" BorderPane.alignment="CENTER" />
+         </top>
+      </BorderPane>
+   </left>
+   <right>
+      <BorderPane fx:id="borderPaneRight" prefHeight="375.0" prefWidth="303.0" BorderPane.alignment="CENTER">
+         <center>
+            <TableView fx:id="tableViewRight" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+              <columns>
+                <TableColumn fx:id="columnNameRight" prefWidth="199.0" text="Имя" />
+                <TableColumn fx:id="columnTypeRight" prefWidth="38.0" text="Тип" />
+                  <TableColumn fx:id="columnSizeRight" prefWidth="65.0" text="Размер" />
+              </columns>
+            </TableView>
+         </center>
+         <top>
+            <TextField fx:id="fieldPathRight" onAction="#onTextFieldRightEnter" BorderPane.alignment="CENTER" />
+         </top>
+      </BorderPane>
+   </right>
+</BorderPane>
