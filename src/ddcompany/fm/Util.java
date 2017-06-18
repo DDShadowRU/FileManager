@@ -47,10 +47,6 @@ public class Util {
         return false;
     }*/
 
-    public static File getPrevDir(File dir){
-        return new File(dir.getPath().replaceAll("[\\w()?!.$#_,А-Яа-я\\s]+$",""));
-    }
-
     public static void removeDirectory(File file){
         if (file.isDirectory()){
             File[] files = file.listFiles();
@@ -154,6 +150,40 @@ public class Util {
             return name;
         }
         return !new File(path).isDirectory() ? (name.indexOf(".") == -1 ? name : name.substring(0,name.indexOf("."))) : name;
+    }
+
+    public static File[] toFileArray(List<File> searchedFiles) {
+        File[] files = new File[searchedFiles.size()];
+        for ( int i=0;i<searchedFiles.size();i++ ){
+            files[i]=searchedFiles.get(i);
+        }
+        return files;
+    }
+
+    public static List<File> getFilesMatchedRegex( List<File> cur, List<File> files, String regex, boolean subDirs, boolean searchFolders, boolean searchFiles ){
+        for ( File file : files ){
+            if ( file.isDirectory() ){
+                if ( searchFolders && file.getName().matches(regex) ){
+                    cur.add(file);
+                }
+                if ( subDirs ){
+                    getFilesMatchedRegex(cur, toFileList(file.listFiles()), regex, subDirs, searchFolders, searchFiles);
+                }
+            }else{
+                if ( searchFiles && file.getName().matches(regex) ){
+                    cur.add(file);
+                }
+            }
+        }
+        return cur;
+    }
+
+    public static List<File> toFileList(File[] files) {
+        List<File> list = new ArrayList<>();
+        for ( File file : files ){
+            list.add(file);
+        }
+        return list;
     }
 
     /*public static Image getImageForFile(File file){

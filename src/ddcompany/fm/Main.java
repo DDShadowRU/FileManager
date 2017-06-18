@@ -2,6 +2,7 @@ package ddcompany.fm;
 
 import ddcompany.fm.fxml.Controller;
 import ddcompany.fm.fxml.CreateFileController;
+import ddcompany.fm.fxml.SearchController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,8 +23,10 @@ public class Main extends Application {
     private static Controller stageController;
     private static Stage stageCreateFile;
     private static CreateFileController stageCreateFileController;
+    private static SearchController stageSearchController;
     private static Stage stageCreateDir;
     private static Stage stageAbout;
+    private static Stage stageSearch;
 
     public static Stage getStage() {
         return stage;
@@ -33,9 +36,15 @@ public class Main extends Application {
     }
     public static Stage getStageAbout() {return stageAbout;}
     public static Stage getStageCreateDir() {return stageCreateDir;}
+    public static Stage getStageSearch() {
+        return stageSearch;
+    }
 
     public static Controller getStageController() {
         return stageController;
+    }
+    public static SearchController getStageSearchController() {
+        return stageSearchController;
     }
     public static CreateFileController getStageCreateFileController() {
         return stageCreateFileController;
@@ -97,6 +106,20 @@ public class Main extends Application {
         stageAbout.setScene(sceneAbout);
         stageAbout.initModality(Modality.WINDOW_MODAL);
         stageAbout.initOwner(primaryStage);
+
+        /////   Search Stage   /////
+        FXMLLoader loaderSearch = new FXMLLoader();
+        loaderSearch.setLocation(getClass().getResource("fxml/search.fxml"));
+
+        stageSearch = new Stage(StageStyle.UTILITY);
+        Parent rootSearch = loaderSearch.load();
+        stageSearch.setResizable(false);
+        stageSearch.setTitle("Найти...");
+        Scene sceneSearch = new Scene(rootSearch, 600, 400);
+        stageSearch.setScene(sceneSearch);
+        stageSearch.initModality(Modality.WINDOW_MODAL);
+        stageSearch.initOwner(primaryStage);
+        stageSearchController = loaderSearch.getController();
 
         readFavorites();
     }

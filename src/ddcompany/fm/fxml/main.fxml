@@ -20,6 +20,7 @@
                         <MenuItem fx:id="menuItemCreateDir" mnemonicParsing="false" text="Папку" />
                     </items>
                   </Menu>
+                  <MenuItem fx:id="menuItemSearch" mnemonicParsing="false" text="Найти..." />
                   <MenuItem fx:id="menuItemQuit" mnemonicParsing="false" text="Выйти" />
             </items>
           </Menu>

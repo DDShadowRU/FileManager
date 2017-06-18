@@ -36,13 +36,13 @@ public class Controller {
     @FXML
     private BorderPane borderPaneLeft;
     @FXML
-    private TableView tableViewRight;
-    @FXML
     private BorderPane borderPaneRight;
     @FXML
     private TextField fieldPathLeft;
     @FXML
     private TextField fieldPathRight;
+    @FXML
+    private TableView tableViewRight;
     @FXML
     private TableColumn<File,String> columnNameLeft;
     @FXML
@@ -67,6 +67,8 @@ public class Controller {
     private MenuItem menuItemAbout;
     @FXML
     private Menu menuFavorites;
+    @FXML
+    private MenuItem menuItemSearch;
 
     private String tableViewLeftPath = "C://";
     private String tableViewRightPath = "C://";
@@ -77,8 +79,6 @@ public class Controller {
 
     @FXML
     public void initialize(){
-
-
 
         tableViewLeft.setOnContextMenuRequested(event ->  requestContextMenu(event));
         tableViewRight.setOnContextMenuRequested(event -> requestContextMenu(event));
@@ -119,20 +119,14 @@ public class Controller {
         columnNameLeft.setPrefWidth(borderPaneLeft.getPrefWidth()-215);
         columnNameRight.setPrefWidth(borderPaneRight.getPrefWidth()-215);
 
-        //buttonDisksAndFLeft.setOnMouseClicked(event -> requestContextMenuDisksAndF("left",event));
-
-        //buttonDisksAndFRight.setOnMouseClicked(event -> requestContextMenuDisksAndF("right",event));
-
         tableViewLeft.setOnMouseClicked(event -> {
             if(event.getButton()== MouseButton.PRIMARY && event.getClickCount() >= 2 ) {
                 if (tableViewLeft.getSelectionModel().getSelectedIndex() != -1) {
                     if (!tableViewLeft.getSelectionModel().getSelectedItem().equals(new File("..."))) {
                         File item = listFilesLeft.get(tableViewLeft.getSelectionModel().getSelectedIndex());
-                        if (item.isDirectory()) {
-                            setLocation("left", item);
-                        }
+                        openFile(item);
                     } else {
-                        setLocation("left", Util.getPrevDir(new File(tableViewLeftPath)));
+                        setLocation("left", new File(tableViewLeftPath).getParentFile());
                     }
                 }
             }
@@ -142,11 +136,9 @@ public class Controller {
                 if (tableViewRight.getSelectionModel().getSelectedIndex() != -1 ) {
                     if (!tableViewRight.getSelectionModel().getSelectedItem().equals(new File("..."))) {
                         File item = listFilesRight.get(tableViewRight.getSelectionModel().getSelectedIndex());
-                        if (item.isDirectory()) {
-                            setLocation("right", item);
-                        }
+                        openFile(item);
                     } else {
-                        setLocation("right", Util.getPrevDir(new File(tableViewRightPath)));
+                        setLocation("right", new File(tableViewRightPath).getParentFile());
                     }
                 }
             }
@@ -162,6 +154,11 @@ public class Controller {
             if(newValue){
                 focus="left";
             }
+        });
+
+        menuItemSearch.setOnAction(event -> {
+            Main.getStageSearchController().getFieldPath().setText(getPath());
+            Main.getStageSearch().show();
         });
 
         initMenuBar();
@@ -182,28 +179,15 @@ public class Controller {
         if( selectedFiles.size() == 1 ){
             File file = selectedFiles.get(0);
             MenuItem itemOpenFile = new MenuItem("Открыть");
-            itemOpenFile.setOnAction(event -> {
-                if( file.isDirectory() ) {
-                    openFile(selectedFiles.get(0));
-                } else {
-                    try {
-                        Desktop.getDesktop().open(file);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            });
+            itemOpenFile.setOnAction(event -> openFile(selectedFiles.get(0)));
             contextMenu.getItems().add(itemOpenFile);
 
             MenuItem itemRename = new MenuItem("Переименовать");
-            itemRename.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    String newName = AlertUtils.showInput("Введите новое имя файла: ",file.getName());
-                    if( !newName.isEmpty() ){
-                        file.renameTo(new File(file.getParent() + File.separator + newName));
-                        updateTableViews();
-                    }
+            itemRename.setOnAction(event -> {
+                String newName = AlertUtils.showInput("Введите новое имя файла: ",file.getName());
+                if( !newName.isEmpty() ){
+                    file.renameTo(new File(file.getParent() + File.separator + newName));
+                    updateTableViews();
                 }
             });
             contextMenu.getItems().add(itemRename);
@@ -223,15 +207,12 @@ public class Controller {
         if( selectedFiles.size() > 0 ) {
 
             MenuItem itemCopyIn = new MenuItem("Копировать в другую панель");
-            itemCopyIn.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    String str = getPathInverse();
-                    for ( File file : selectedFiles ){
-                        Util.copy( file.toPath() , Paths.get(str + File.separator + file.getName() ));
-                    }
-                    updateTableViews();
+            itemCopyIn.setOnAction(event -> {
+                String str = getPathInverse();
+                for ( File file : selectedFiles ){
+                    Util.copy( file.toPath() , Paths.get(str + File.separator + file.getName() ));
                 }
+                updateTableViews();
             });
             contextMenu.getItems().add(itemCopyIn);
 
@@ -264,6 +245,12 @@ public class Controller {
     private void openFile(File file) {
         if ( file.isDirectory() ){
             setLocation(focus,file);
+        }else{
+            try {
+                Desktop.getDesktop().open(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -345,7 +332,7 @@ public class Controller {
         }
     }
 
-    private void setLocation(String u, File file) {
+    public void setLocation(String u, File file) {
         if( file.exists() ) {
             if (u == "left") {
                 listFilesLeft.clear();
@@ -394,6 +381,14 @@ public class Controller {
 
     public String getTableViewRightPath(){
         return tableViewRightPath;
+    }
+
+    public TableView getTableView(String f) {
+        return f.equals("left") ? tableViewLeft : tableViewRight;
+    }
+
+    public List<File> getListFiles(String f) {
+        return f.equals("left") ? listFilesLeft : listFilesRight;
     }
 
     /*  EVENTS  */
