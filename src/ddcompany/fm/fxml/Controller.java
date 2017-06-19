@@ -3,6 +3,7 @@ package ddcompany.fm.fxml;
 import ddcompany.fm.AlertUtils;
 import ddcompany.fm.Main;
 import ddcompany.fm.Util;
+import ddcompany.fm.config.ConfigManager;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -11,13 +12,19 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.util.Callback;
 
 import java.awt.*;
@@ -91,8 +98,8 @@ public class Controller {
         tableViewRight.setItems(listFilesRight);
         tableViewRight.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        Callback callbackColumnName = (Callback<TableColumn.CellDataFeatures<File, String>, ObservableValue<String>>) param -> new SimpleStringProperty(Util.getFileNameNoExt(param.getValue().getName(),param.getValue().getPath()));
-        Callback callbackColumnType = (Callback<TableColumn.CellDataFeatures<File, String>, ObservableValue<String>>) param -> param.getValue().isDirectory() ? new SimpleStringProperty("<DIR>") : new SimpleStringProperty(Util.getExt(param.getValue()));
+        Callback callbackColumnName = (Callback<TableColumn.CellDataFeatures<File, String>, ObservableValue<String>>) param -> new SimpleStringProperty(param.getValue().getPath());
+        Callback callbackColumnType = (Callback<TableColumn.CellDataFeatures<File, String>, ObservableValue<String>>) param -> new SimpleStringProperty(param.getValue().getPath());
         Callback callbackColumnSize = (Callback<TableColumn.CellDataFeatures<File, String>, ObservableValue<String>>) param -> {
 
             if( !param.getValue().isDirectory() )
@@ -100,12 +107,81 @@ public class Controller {
             else
                 return new SimpleStringProperty("");
         };
+        Callback callbackCellFactoryName = new Callback<TableColumn<File, String>, TableCell<File, String>>() {
+            @Override
+            public TableCell<File, String> call(TableColumn<File, String> param) {
+                return new TableCell<File,String>(){
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if( item!=null || !empty ) {
+                            if (!item.equals("...")) {
+                                File file = new File(item);
+                                String str = Util.getFileNameNoExt(file.getName(), file.getPath());
+                                HBox hBox = new HBox();
+                                Label label = new Label();
+
+                                if (file.isDirectory()) {
+                                    if (Boolean.valueOf(ConfigManager.getValue(ConfigManager.CONFIG_FOLDER_NAMES_IN_BRACKETS))) {
+                                        str = "[" + str + "]";
+                                    }
+                                }
+                                label.setText(str);
+
+                                hBox.getChildren().add(new ImageView(Util.getImageForExt(file)));
+                                hBox.getChildren().add(label);
+
+                                this.setGraphic(hBox);
+                            }else{
+                                HBox hBox = new HBox();
+
+                                Label label = new Label("...");
+
+                                hBox.getChildren().add( label );
+                                setGraphic(hBox);
+                            }
+                        }else {
+                            setText(null);
+                            setGraphic(null);
+                        }
+                    }
+                };
+            }
+        };
+        Callback callbackCellFactoryType = new Callback<TableColumn<File, String>, TableCell<File, String>>() {
+            @Override
+            public TableCell<File, String> call(TableColumn<File, String> param) {
+                return new TableCell<File,String>(){
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if( item == null || empty ){
+                            setText( null );
+                            setTextFill( null );
+                        }else{
+                            File file =  new File( item );
+                            String str = "";
+                            if( file.isDirectory() ) {
+                                str = "<DIR>";
+                            }else{
+                                str = Util.getExt(file);
+                            }
+                            setText( str );
+                        }
+                    }
+                };
+            }
+        };
 
         columnNameLeft.setCellValueFactory(callbackColumnName);
+        columnNameLeft.setCellFactory(callbackCellFactoryName);
         columnNameRight.setCellValueFactory(callbackColumnName);
+        columnNameRight.setCellFactory(callbackCellFactoryName);
 
         columnTypeLeft.setCellValueFactory(callbackColumnType);
+        columnTypeLeft.setCellFactory(callbackCellFactoryType);
         columnTypeRight.setCellValueFactory(callbackColumnType);
+        columnTypeRight.setCellFactory(callbackCellFactoryType);
 
         columnSizeLeft.setCellValueFactory(callbackColumnSize);
         columnSizeRight.setCellValueFactory(callbackColumnSize);
@@ -126,7 +202,7 @@ public class Controller {
                         File item = listFilesLeft.get(tableViewLeft.getSelectionModel().getSelectedIndex());
                         openFile(item);
                     } else {
-                        setLocation("left", new File(tableViewLeftPath).getParentFile());
+                        if( new File(tableViewLeftPath).getParentFile() != null ) setLocation("left", new File(tableViewLeftPath).getParentFile());
                     }
                 }
             }
@@ -163,8 +239,8 @@ public class Controller {
 
         initMenuBar();
 
-        setLocation("left",new File(tableViewLeftPath));
-        setLocation("right",new File(tableViewRightPath));
+        setLocation("left", new File(ConfigManager.getValue( ConfigManager.CONFIG_START_PATH_LEFT )) );
+        setLocation("right",new File(ConfigManager.getValue( ConfigManager.CONFIG_START_PATH_RIGHT )));
 
     }
 
@@ -350,6 +426,9 @@ public class Controller {
 
             List<File> files = Util.sort(1, file.listFiles());
             for (File f : files) {
+                if( f.isHidden() ){
+                    if ( !Boolean.valueOf(ConfigManager.getValue( ConfigManager.CONFIG_SHOW_S_FILES_FOLDERS )) ) continue;
+                }
                 if (u.equals("left")) {
                     listFilesLeft.add(f);
                 } else if (u.equals("right")) {
@@ -481,5 +560,13 @@ public class Controller {
             item.setOnAction(event1 -> setLocation(focus, file));
             menuFavorites.getItems().add(item);
         }
+    }
+
+    @FXML
+    private void onMenuItemSettings(){
+        Main.getStageSettingsController().getFieldStartPathLeft().setText( ConfigManager.getValue( ConfigManager.CONFIG_START_PATH_LEFT ) );
+        Main.getStageSettingsController().getFieldStartPathRight().setText( ConfigManager.getValue( ConfigManager.CONFIG_START_PATH_RIGHT ) );
+        Main.getStageSettingsController().getCheckBoxFNamesInBrackets().setSelected( Boolean.valueOf(ConfigManager.getValue( ConfigManager.CONFIG_FOLDER_NAMES_IN_BRACKETS )) );
+        Main.getStageSettings().show();
     }
 }

@@ -6,11 +6,10 @@ import ddcompany.fm.Main;
 import ddcompany.fm.Util;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 
@@ -62,6 +61,7 @@ public class SearchController {
             }
         }
     }
+
     /*  EVENTS  */
     @FXML
     private void onBtnPasteLeftPathClick(){
@@ -146,7 +146,8 @@ public class SearchController {
     private void onBtnSearchClick(){
         File filePath = new File(fieldPath.getText());
         if ( filePath.isDirectory() && filePath.exists() ) {
-            sortedFiles.clear();
+            listView.setDisable(true);
+
             List<File> files = Util.toFileList(filePath.listFiles());
             String regex = "";
             if( checkBoxIsRegEx.isSelected() ){
@@ -158,10 +159,12 @@ public class SearchController {
                     regex = "^\\Q"+fieldSearch.getText()+"\\E.*";
                 }
             }
-            sortedFiles.addAll(Util.getFilesMatchedRegex(new ArrayList<File>(), files, regex, checkBoxSubDirs.isSelected(), checkBoxSearchFolders.isSelected(), checkBoxSearchFiles.isSelected() ));
+            List<File> list = Util.getFilesMatchedRegex(new ArrayList<File>(), files, regex, checkBoxSubDirs.isSelected(), checkBoxSearchFolders.isSelected(), checkBoxSearchFiles.isSelected());
+            sortedFiles.addAll(list);
+            listView.setDisable(false);
+
         }else{
             AlertUtils.showError("Неверный путь!");
         }
     }
-
 }

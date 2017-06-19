@@ -21,6 +21,7 @@
                     </items>
                   </Menu>
                   <MenuItem fx:id="menuItemSearch" mnemonicParsing="false" text="Найти..." />
+                  <MenuItem mnemonicParsing="false" onAction="#onMenuItemSettings" text="Настройки" />
                   <MenuItem fx:id="menuItemQuit" mnemonicParsing="false" text="Выйти" />
             </items>
           </Menu>

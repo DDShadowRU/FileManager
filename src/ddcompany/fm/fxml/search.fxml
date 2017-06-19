@@ -9,7 +9,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.131" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ddcompany.fm.fxml.SearchController">
    <children>
-      <ListView fx:id="listView" layoutX="14.0" layoutY="145.0" prefHeight="241.0" prefWidth="464.0" />
+      <ListView fx:id="listView" layoutX="14.0" layoutY="145.0" prefHeight="246.0" prefWidth="464.0" />
       <Label layoutX="14.0" layoutY="14.0" text="Поиск:" />
       <TextField fx:id="fieldSearch" layoutX="58.0" layoutY="10.0" prefHeight="25.0" prefWidth="374.0" />
       <CheckBox fx:id="checkBoxIsRegEx" layoutX="437.0" layoutY="14.0" mnemonicParsing="false" text="Регулярное выражение" />
@@ -22,7 +22,7 @@
       <CheckBox fx:id="checkBoxSearchFolders" layoutX="22.0" layoutY="121.0" mnemonicParsing="false" selected="true" text="Искать папки" />
       <Button fx:id="buttonTo" layoutX="491.0" layoutY="145.0" mnemonicParsing="false" onAction="#onBtnToClick" prefHeight="34.0" prefWidth="95.0" text="Показать" />
       <Button fx:id="buttonOpen" layoutX="491.0" layoutY="183.0" mnemonicParsing="false" onAction="#onBtnOpenClick" prefHeight="34.0" prefWidth="95.0" text="Открыть" />
-      <Button layoutX="491.0" layoutY="352.0" mnemonicParsing="false" onAction="#onBtnSearchClick" prefHeight="34.0" prefWidth="95.0" text="Поиск" />
+      <Button layoutX="491.0" layoutY="357.0" mnemonicParsing="false" onAction="#onBtnSearchClick" prefHeight="34.0" prefWidth="95.0" text="Поиск" />
       <CheckBox fx:id="checkBoxSubDirs" layoutX="135.0" layoutY="98.0" mnemonicParsing="false" selected="true" text="Включить под папки" />
    </children>
 </AnchorPane>

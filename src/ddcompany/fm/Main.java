@@ -1,8 +1,10 @@
 package ddcompany.fm;
 
+import ddcompany.fm.config.ConfigManager;
 import ddcompany.fm.fxml.Controller;
 import ddcompany.fm.fxml.CreateFileController;
 import ddcompany.fm.fxml.SearchController;
+import ddcompany.fm.fxml.SettingsController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,9 +26,11 @@ public class Main extends Application {
     private static Stage stageCreateFile;
     private static CreateFileController stageCreateFileController;
     private static SearchController stageSearchController;
+    private static SettingsController stageSettingsController;
     private static Stage stageCreateDir;
     private static Stage stageAbout;
     private static Stage stageSearch;
+    private static Stage stageSettings;
 
     public static Stage getStage() {
         return stage;
@@ -39,6 +43,9 @@ public class Main extends Application {
     public static Stage getStageSearch() {
         return stageSearch;
     }
+    public static Stage getStageSettings() {
+        return stageSettings;
+    }
 
     public static Controller getStageController() {
         return stageController;
@@ -49,9 +56,15 @@ public class Main extends Application {
     public static CreateFileController getStageCreateFileController() {
         return stageCreateFileController;
     }
+    public static SettingsController getStageSettingsController() {
+        return stageSettingsController;
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
+        ConfigManager.initConfig();
+
         stage=primaryStage;
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("fxml/main.fxml"));
@@ -120,6 +133,20 @@ public class Main extends Application {
         stageSearch.initModality(Modality.WINDOW_MODAL);
         stageSearch.initOwner(primaryStage);
         stageSearchController = loaderSearch.getController();
+
+        /////   Settings Stage   /////
+        FXMLLoader loaderSettings = new FXMLLoader();
+        loaderSettings.setLocation(getClass().getResource("fxml/settings.fxml"));
+
+        stageSettings = new Stage(StageStyle.UTILITY);
+        Parent rootSettings = loaderSettings.load();
+        stageSettings.setResizable(false);
+        stageSettings.setTitle("Настройки");
+        Scene sceneSettings = new Scene(rootSettings, 600, 400);
+        stageSettings.setScene(sceneSettings);
+        stageSettings.initModality(Modality.WINDOW_MODAL);
+        stageSettings.initOwner(primaryStage);
+        stageSettingsController = loaderSettings.getController();
 
         readFavorites();
     }

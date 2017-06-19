@@ -2,6 +2,8 @@ package ddcompany.fm;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,16 +38,6 @@ public class Util {
         }
         return sorted;
     }
-
-    /*public static boolean isRoot(File path){
-        File[] roots =  File.listRoots();
-        for( File root : roots ){
-            if( root.getPath().equals(path.getPath()) ){
-                return true;
-            }
-        }
-        return false;
-    }*/
 
     public static void removeDirectory(File file){
         if (file.isDirectory()){
@@ -111,13 +103,6 @@ public class Util {
         }
     }
 
-    public static boolean isValidPathFile(String path) {
-        if( path.matches("[A-z:\\/]+.+[.][A-z]+$") ){
-            return true;
-        }
-        return false;
-    }
-
     public static String pbytes(Long bytes){
         double lon = 0;
         String string = " Bytes";
@@ -160,14 +145,15 @@ public class Util {
         return files;
     }
 
-    public static List<File> getFilesMatchedRegex( List<File> cur, List<File> files, String regex, boolean subDirs, boolean searchFolders, boolean searchFiles ){
+    public static List<File> getFilesMatchedRegex(List<File> cur, List<File> files, String regex, boolean subDirs, boolean searchFolders, boolean searchFiles){
         for ( File file : files ){
-            if ( file.isDirectory() ){
+            if ( file.isDirectory() && !file.getName().equals("...") ){
                 if ( searchFolders && file.getName().matches(regex) ){
                     cur.add(file);
                 }
                 if ( subDirs ){
-                    getFilesMatchedRegex(cur, toFileList(file.listFiles()), regex, subDirs, searchFolders, searchFiles);
+                    List<File> fileList = toFileList(file.listFiles());
+                    if( fileList != null ) getFilesMatchedRegex(cur, fileList, regex, subDirs, searchFolders, searchFiles);
                 }
             }else{
                 if ( searchFiles && file.getName().matches(regex) ){
@@ -180,15 +166,35 @@ public class Util {
 
     public static List<File> toFileList(File[] files) {
         List<File> list = new ArrayList<>();
-        for ( File file : files ){
-            list.add(file);
+        if( files!=null ){
+            for ( File file : files ){
+                list.add(file);
+            }
         }
         return list;
     }
 
-    /*public static Image getImageForFile(File file){
-
-        return new Image("file:/ddcompany/fm/resources/folder.png");
-    }*/
+    public static Image getImageForExt(File file){
+        Image image = new Image("/ddcompany/fm/resources/unknown.png");
+        if ( file.isDirectory() ){
+            image = new Image("/ddcompany/fm/resources/folder.png");
+        }else {
+            String ext = getExt(file);
+            if ( ext.equals("png") || ext.equals("jpg") || ext.equals("jpeg") ){
+                image = new Image("/ddcompany/fm/resources/image.png");
+            }else if( ext.equals("txt") || ext.equals("ini") ){
+                image = new Image("/ddcompany/fm/resources/text.png");
+            }else if( ext.equals("zip") || ext.equals("rar") ){
+                image = new Image("/ddcompany/fm/resources/archive.png");
+            }else if( ext.equals("mp3") ){
+                image = new Image("/ddcompany/fm/resources/audio.png");
+            }else if( ext.equals("jar") ){
+                image = new Image("/ddcompany/fm/resources/jar.png");
+            }else if( ext.equals("exe") ){
+                image = new Image("/ddcompany/fm/resources/exe.png");
+            }
+        }
+        return image;
+    }
 
 }
