@@ -8,6 +8,12 @@ import java.util.Optional;
 
 public class AlertUtils {
 
+    /**
+     * Показывает окно с TextField
+     * @param text текст сообщения
+     * @param defaultValue текст в TextField
+     * @return введенный пользователем текст
+     */
     public static String showInput( String text , String defaultValue ){
         TextInputDialog dialog = new TextInputDialog(defaultValue);
         dialog.setHeaderText(null);
@@ -21,6 +27,11 @@ public class AlertUtils {
         }
     }
 
+    /**
+     * Показать окно подтверждения
+     * @param text текст сообщения
+     * @return
+     */
     public static ButtonType showConfirm(String text ){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setHeaderText(null);
@@ -30,10 +41,19 @@ public class AlertUtils {
         return result.get();
     }
 
+    /**
+     * Показать окно с ошибкой
+     * @param text текст сообщения
+     */
     public static void showError( String text ){
         showError(text,false);
     }
 
+    /**
+     * Показать окно с ошибкой
+     * @param text текст сообщения
+     * @param wait ждать ли пока пользователь закроет окно
+     */
     public static void showError( String text , boolean wait ){
 
         Alert alert = new Alert(Alert.AlertType.ERROR);

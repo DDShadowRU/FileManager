@@ -1,10 +1,12 @@
 package ddcompany.fm.config;
 
 import ddcompany.fm.AlertUtils;
+import ddcompany.fm.Util;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +20,15 @@ public class ConfigManager {
     private static File fileConfig = new File("data/config.dat");
     private static List<ConfigUnit> defaultFields = new ArrayList<>();
     private static List<ConfigUnit> fields = new ArrayList<>();
+    private static List<File> favorites = new ArrayList<>();
 
     public static final String CONFIG_START_PATH_LEFT = "startPathLeft";
     public static final String CONFIG_START_PATH_RIGHT = "startPathRight";
     public static final String CONFIG_FOLDER_NAMES_IN_BRACKETS = "folderNamesInBrackets";
     public static final String CONFIG_SHOW_S_FILES_FOLDERS = "showSFilesFolders";
+    public static final String CONFIG_FLOOR_SIZE = "floorSize";
+
+    public static final String VERSION = "0.2";
 
     /*
     * Инициализация конфига.Вызывается при старте программы
@@ -37,6 +43,8 @@ public class ConfigManager {
             defaultFields.add(new ConfigUnit(CONFIG_FOLDER_NAMES_IN_BRACKETS, "false"));
             //Отображение скрытых папок/файлов
             defaultFields.add(new ConfigUnit(CONFIG_SHOW_S_FILES_FOLDERS, "false"));
+            //Округление размера файлов
+            defaultFields.add(new ConfigUnit(CONFIG_FLOOR_SIZE, "true"));
 
             if ( !dataDir.exists() ) dataDir.mkdir();
             if ( !fileConfig.exists() ) fileConfig.createNewFile();
@@ -123,4 +131,65 @@ public class ConfigManager {
         return unit == null ? "" : unit.getValue();
     }
 
+    /*
+    * Сохранение закладок
+    */
+    public static void saveFavorites(){
+        if ( !new File("data").exists() ){
+            new File("data").mkdir();
+        }
+        if ( !new File("data/favorites.dat").exists() ){
+            try {
+                new File("data/favorites.dat").createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            try {
+                //очищаем файл
+                Files.write(Paths.get("data/favorites.dat"), "".getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        for( File file : favorites ) {
+            try {
+                Files.write(Paths.get("data/favorites.dat"), (file.getPath()+"\n").getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Добавление в закладки
+     * @param file папка
+     */
+    public static void addFavorites( File file ){
+        if ( file.isDirectory() ) favorites.add(file);
+        saveFavorites();
+    }
+
+    /**
+     * Добавлена ли папка в закладки
+     * @param file папка
+     * @return
+     */
+    public static boolean containsFavorites( File file ){
+        return favorites.contains( file );
+    }
+
+    /**
+     * Удаление из закладок
+     * @param file папка
+     */
+    public static void removeFavorites( File file ){
+        favorites.remove( file );
+        saveFavorites();
+    }
+
+    /*  GETTERS */
+    public static List<File> getFavorites() {
+        return favorites;
+    }
 }

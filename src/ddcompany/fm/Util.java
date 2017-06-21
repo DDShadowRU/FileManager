@@ -1,8 +1,8 @@
 package ddcompany.fm;
 
+import ddcompany.fm.config.ConfigManager;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 
 import java.io.File;
@@ -17,8 +17,14 @@ import java.util.Optional;
 
 public class Util {
 
+    /**
+     * Сортировка файлов
+     * @param sortType тип сортировки.1 - сначала папки, а потом файлы
+     * @param files массив файлов для сортировки
+     * @return отсортированный массив файлов
+     */
     public static List<File> sort(int sortType,File[] files){
-        List<File> sorted = new ArrayList<File>();
+        List<File> sorted = new ArrayList<>();
         if( files!=null ) {
             if (sortType == 1) {
 
@@ -39,6 +45,10 @@ public class Util {
         return sorted;
     }
 
+    /**
+     * Удаление папки
+     * @param file папка, кторую нужно удалить
+     */
     public static void removeDirectory(File file){
         if (file.isDirectory()){
             File[] files = file.listFiles();
@@ -51,6 +61,29 @@ public class Util {
         }
     }
 
+    /**
+     * Удаление файлов/папок
+     * @param toRemove список файлов для удаления
+     * @return true - завершено без ошибок, а false с ошибками
+     */
+    public static boolean remove(List<File> toRemove ){
+        for( File file : toRemove ){
+            if( file.getPath()!="..." ) {
+                try {
+                    if (!file.isDirectory()) file.delete();
+                    else removeDirectory(file);
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    /**
+     * Копирование файла
+     * @param path путь к файлу, который нужно скопировать
+     * @param pathTo путь куда нужно скопировать
+     */
     public static void copy(Path path, Path pathTo){
         if( path.toFile().isDirectory() ){
             File[] files = path.toFile().listFiles();
@@ -80,20 +113,23 @@ public class Util {
         }
     }
 
-    public static boolean remove(List<File> toRemove ){
-        for( File file : toRemove ){
-            if( file.getPath()!="..." ) {
-                try {
-                    if (!file.isDirectory()) file.delete();
-                    else removeDirectory(file);
-                } catch (Exception e) {
-                    return false;
-                }
-            }
+
+    public static void copy(List<File> files, String dir ){
+
+        for ( File file : files ){
+
+            copy( file.toPath(), Paths.get( dir + File.separator + file.getName() ) );
+
         }
-        return true;
+
     }
 
+
+    /**
+     * Возвращает расширение файла
+     * @param file файл
+     * @return расширение
+     */
     public static String getExt(File file){
         if ( !file.isDirectory() ) {
             int index = file.getName().indexOf(".");
@@ -103,8 +139,13 @@ public class Util {
         }
     }
 
+    /**
+     * Округляем размер файла
+     * @param bytes
+     * @return округлённый размер файла
+     */
     public static String pbytes(Long bytes){
-        double lon = 0;
+        double lon = bytes;
         String string = " Bytes";
 
         if( bytes >=1024 ){
@@ -127,6 +168,7 @@ public class Util {
             }
         }
 
+        if( Boolean.valueOf( ConfigManager.getValue( ConfigManager.CONFIG_FLOOR_SIZE ) ) ) return ( Math.round( lon * 100.0 ) / 100.0 ) + string;
         return lon + string;
     }
 
@@ -137,22 +179,24 @@ public class Util {
         return !new File(path).isDirectory() ? (name.indexOf(".") == -1 ? name : name.substring(0,name.indexOf("."))) : name;
     }
 
-    public static File[] toFileArray(List<File> searchedFiles) {
-        File[] files = new File[searchedFiles.size()];
-        for ( int i=0;i<searchedFiles.size();i++ ){
-            files[i]=searchedFiles.get(i);
-        }
-        return files;
-    }
-
-    public static List<File> getFilesMatchedRegex(List<File> cur, List<File> files, String regex, boolean subDirs, boolean searchFolders, boolean searchFiles){
+    /**
+     * Возвращает файлы имена которых соответствуют регулярному выражению
+     * @param cur список файлов, соответствующих рег. выражению
+     * @param files список файлов
+     * @param regex рег. выражение
+     * @param subDirs сканировать ли под папки
+     * @param searchFolders проверять ли файлы
+     * @param searchFiles проверять ли папки
+     * @return список файлов имена которых соответствуют регулярному выражению
+     */
+    public static List<File> getFilesMatchedRegex(List<File> cur, File[] files, String regex, boolean subDirs, boolean searchFolders, boolean searchFiles){
         for ( File file : files ){
             if ( file.isDirectory() && !file.getName().equals("...") ){
                 if ( searchFolders && file.getName().matches(regex) ){
                     cur.add(file);
                 }
                 if ( subDirs ){
-                    List<File> fileList = toFileList(file.listFiles());
+                    File[] fileList = file.listFiles();
                     if( fileList != null ) getFilesMatchedRegex(cur, fileList, regex, subDirs, searchFolders, searchFiles);
                 }
             }else{
@@ -164,16 +208,11 @@ public class Util {
         return cur;
     }
 
-    public static List<File> toFileList(File[] files) {
-        List<File> list = new ArrayList<>();
-        if( files!=null ){
-            for ( File file : files ){
-                list.add(file);
-            }
-        }
-        return list;
-    }
-
+    /**
+     * Возвращает иконку в зависимости от расширения файла
+     * @param file файл
+     * @return иконка
+     */
     public static Image getImageForExt(File file){
         Image image = new Image("/ddcompany/fm/resources/unknown.png");
         if ( file.isDirectory() ){

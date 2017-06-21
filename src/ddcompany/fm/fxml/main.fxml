@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -25,10 +26,21 @@
                   <MenuItem fx:id="menuItemQuit" mnemonicParsing="false" text="Выйти" />
             </items>
           </Menu>
-            <Menu fx:id="menuFavorites" mnemonicParsing="false" onShowing="#onMenuFavoritesClick" text="Закладки и диски">
-               <items>
-                  <MenuItem mnemonicParsing="false" text="Test" />
-               </items></Menu>
+            <Menu fx:id="menuTo" mnemonicParsing="false" text="Перейти">
+              <items>
+                  <Menu fx:id="menuDisks" mnemonicParsing="false" onShowing="#onMenuDisksShow" text="Диски">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                     </items>
+                  </Menu>
+                  <Menu fx:id="menuFavorites" mnemonicParsing="false" onShowing="#onMenuFavoritesShow" text="Закладки">
+                     <items>
+                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
+                     </items>
+                  </Menu>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+              </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Помощь">
             <items>
               <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="О программе" />

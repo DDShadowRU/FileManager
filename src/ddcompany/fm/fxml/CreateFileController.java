@@ -10,26 +10,18 @@ import java.io.IOException;
 
 public class CreateFileController{
 
-    @FXML
-    private TextField field;
-    @FXML
-    private TextField fieldPath;
+    @FXML private TextField field;
+    @FXML private TextField fieldPath;
 
+    /*  GETTERS */
     public TextField getFieldPath() {
         return fieldPath;
     }
 
-    @FXML
-    public void initialize(){
-
-
-
-    }
+    @FXML public void initialize(){}
 
     /*  EVENTS  */
-    @FXML
-    public void onBtnCreateClick() {
-        String lw = Main.getStageController().getFocusedListView();
+    @FXML public void onBtnCreateClick() {
             if( !field.getText().isEmpty() ){
                 String t = fieldPath.getText().endsWith("/") ? fieldPath.getText() : fieldPath.getText() + "/";
                 if(new File(t).exists()) {

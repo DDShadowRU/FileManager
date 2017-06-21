@@ -9,21 +9,12 @@ import java.io.File;
 
 public class CreateDirController {
 
-    @FXML
-    private TextField field;
+    @FXML private TextField field;
 
-    @FXML
-    public void initialize(){
-
-    }
-
-    public TextField getField() {
-        return field;
-    }
+    @FXML public void initialize(){}
 
     /*  EVENTS  */
-    @FXML
-    public void onBtnCreateDirClick(){
+    @FXML public void onBtnCreateDirClick(){
         if ( !field.getText().isEmpty() ) {
             String path = Main.getStageController().getPath();
             path = path.endsWith("/") ? path : path + "/";

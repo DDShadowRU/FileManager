@@ -20,7 +20,6 @@ import java.nio.file.Paths;
 
 public class Main extends Application {
 
-    public static final String VERSION = "0.1";
     private static Stage stage;
     private static Controller stageController;
     private static Stage stageCreateFile;
@@ -158,7 +157,7 @@ public class Main extends Application {
                 String[] paths = pathsString.split("\n");
                 for ( String path : paths ){
                     if( !path.isEmpty() ){
-                        stageController.addFavorite(new File(path));
+                        ConfigManager.addFavorites( new File( path ) );
                     }
                 }
             } catch (IOException e) {
